@@ -1,4 +1,0 @@
-name = "my-worker"
-compatibility_date = "2024-05-10"
-
-main = "index.js"

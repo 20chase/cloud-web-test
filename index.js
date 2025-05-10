@@ -1,22 +1,16 @@
-export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-    const target = "http://imz410.ust.hk:1180" + url.pathname + url.search;
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
-    const proxyRequest = new Request(target, {
-      method: request.method,
-      headers: request.headers,
-      body: request.body,
-      redirect: 'manual'
-    });
+const app = express();
 
-    const response = await fetch(proxyRequest);
+// 代理所有请求到目标服务
+app.use('/', createProxyMiddleware({
+    target: 'http://imz410.ust.hk:1180', // 目标地址
+    changeOrigin: true,
+    ws: true
+}));
 
-    // 复制响应（包括 401 challenge）
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers
-    });
-  }
-}
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Proxy server running on port ${PORT}`);
+});
